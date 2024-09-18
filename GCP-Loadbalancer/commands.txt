@@ -1,7 +1,20 @@
     1  gcloud auth list
     2  gcloud config set compute/region us-central1
     3  gcloud config set compute/zone us-central1-c
-    4  gcloud compute firewall-rules create www-firewall-network-lb     --target-tags network-lb-tag --allow tcp:80
+       gcloud compute instances create www2 \
+    --zone=us-central1-c \
+    --tags=network-lb-tag \
+    --machine-type=e2-small \
+    --image-family=debian-11 \
+    --image-project=debian-cloud \
+    --metadata=startup-script='#!/bin/bash
+      apt-get update
+      apt-get install apache2 -y
+      service apache2 restart
+      echo "
+<h3>Web Server: www2</h3>" | tee /var/www/html/index.html'
+    4 
+     gcloud compute firewall-rules create www-firewall-network-lb     --target-tags network-lb-tag --allow tcp:80
     5  gcloud compute instances list
     6  curl http://34.28.244.76
     7  gcloud compute addresses create network-lb-ip-1   --region us-central1
